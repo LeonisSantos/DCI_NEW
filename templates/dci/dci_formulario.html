@@ -1,0 +1,105 @@
+{% extends 'dci/base.html' %}
+{% load static %}
+{% block content %}
+<section class="container col-8 mt-3">
+    <form>
+
+        <div class="form-group">
+            <label for="inputTitulo"><b>Título da ETP</b></label>
+            <input type="text" class="form-control" id="inputTitulo" placeholder="Título da ETP" value="{{dci.titulo}}"
+                disabled="True">
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputEtp"><b>ETP</b></label>
+                <input type="text" class="form-control" id="inputEtp" placeholder="etp_num" value="{{dci.etp}}"
+                    disabled="True">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputElab"><b>Elaborador</b></label>
+                <input type="text" class="form-control" id="inputElab" placeholder="elaborador"
+                    value="{{dci.elaborador}}" disabled="True">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputTpEtp"><b>Tipo da ETP</b></label>
+                <input type="text" class="form-control" id="inputTpEtp" placeholder="Tipo_Etp" value="{{dci.tipoEtp}}"
+                    disabled="True">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputVendor"><b>Fornecedor</b></label>
+                <input type="text" class="form-control" id="inputVendor" placeholder="Vendor" value="{{dci.vendor}}"
+                    disabled="True">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="inputDesc"><b>Descrição Macro</b></label>
+                <input type="text" class="form-control" id="inputDesc" placeholder="Descrição Macro"
+                    value="{{dci.descri_etp}}" disabled="True">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="inputObje"><b>Objetivo</b></label>
+                <input type="text" class="form-control" id="inputObje" placeholder="Objetivo" value="{{dci.objetivo}}"
+                    disabled="True">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="inputMot"><b>Motivador</b></label>
+                <input type="text" class="form-control" id="inputMot" value="{{dci.motivador}}" disabled="True">
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <label for="inputDem"><b>Demanda</b></label>
+            <input type="text" class="form-control" id="inputDem" value="{{dci.demanda}}" disabled="True">
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputTipEn">Tipo de Entrega</label>
+                <select id="inputTipEn" class="form-control">
+                    <option selected>Escolher...</option>
+                    <option>TOTAL</option>
+                    <option>PARCIAL</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputRedExt">Rede Externa</label>
+                <select id="inputRedExt" class="form-control">
+                    <option selected>Escolher...</option>
+                    <option>NÃO</option>
+                    <option>SIM</option>
+                </select>
+            </div>
+        </div>
+        <section class="mt-5">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Número OE</th>
+                        <th scope="col">Tipo da OE</th>
+                        <th scope="col">Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if oes %}
+                    {% for oe in oes %}
+                    <tr>
+                        <th scope="row">{{ oe.oe_id }}</th>
+                        <td>{{ oe.num_oe }}</td>
+                        <td>{{ oe.tipo_oe }}</td>
+                        <td>{{ oe.descricao }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+        <div class="form-group mt-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="gridCheck">
+                <label class="form-check-label" for="gridCheck">
+                    Clique em mim
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+</section>
+{% endblock %}
