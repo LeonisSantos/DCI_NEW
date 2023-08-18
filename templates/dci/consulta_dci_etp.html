@@ -1,0 +1,101 @@
+{% extends 'dci/base.html' %}
+{% load static %}
+{% block content %}
+<section class="container" style="margin-top: 70px">
+    <h5 class="display-6">Titulo:<small class="text-muted">{{ etp.titulo }}</small></h5>
+    <ul class="list-group">
+        <li class="list-group-item"><b>Atributos da ETP</b></li>
+        <li class="list-group-item"><b>ETP: </b>{{ etp.etp }}</li>
+        <li class="list-group-item"><b>Tipo da ETP: </b>{{ etp.tipoEtp }}</li>
+        <li class="list-group-item"><b>Tipo de Entrega: </b>{{ dci.tipo_entrega }}</li>
+        <li class="list-group-item"><b>Elaborador: </b>{{ etp.elaborador }}</li>
+        <li class="list-group-item"><b>Demanda: </b>{{ etp.demanda }}</li>
+        <li class="list-group-item"><b>Motivador: </b>{{ etp.motivador }}</li>
+        <li class="list-group-item"><b>Vendor: </b>{{ etp.vendor }}</li>
+        <li class="list-group-item"><b>Descrição Macro do Projeto: </b>{{ etp.descri_etp }}</li>
+        <li class="list-group-item"><b>Objetivo do Projeto: </b>{{ etp.objetivo }}</li>
+        <li class="list-group-item"><b>Observações dos Atributos: </b>{{ dci.obv_atr }}</li>
+    </ul>
+    <section class="mt-3">
+        {% if oes %}
+        <div class="card">
+            <h5 class="card-header">Lista de OES</h5>
+            <div class="card-body">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">numOE</th>
+                            <th scope="col">Tipo da OE</th>
+                            <th scope="col">Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for oe in oes %}
+                        {% for id in lt_oes %}
+                        {% if oe.oe_id == id %}
+                        <tr>
+                            <th>{{ oe.oe_id }}</th>
+                            <td>{{ oe.num_oe }}</td>
+                            <td>{{ oe.tipo_oe }}</td>
+                            <td>{{ oe.descricao }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p><b>Observações OES: </b>{{ dci.obv_oes }}</p>
+            </div>
+        </div>
+        {% else %}
+        <h5>Neste projeto não contém OES</h5>
+        {% endif %}
+    </section>
+    <section>
+        {% if ots %}
+        <div class="card mt-3">
+            <h5 class="card-header">Rede Externa: Sim</h5>
+            <div class="card-body">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">numOTS</th>
+                            <th scope="col">Sigla</th>
+                            <th scope="col">Proprietario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in ots %}
+                        {% for id in lt_ots %}
+                        {% if item.ots_id == id %}
+                        <tr>
+                            <th>{{ item.ots_id }}</th>
+                            <td>{{ item.num_ots }}</td>
+                            <td>{{ item.sigla }}</td>
+                            <td>{{ item.proprietario }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p><b>Observações Rede Externa: </b>{{ dci.obv_rede_ext }}</p>
+
+            </div>
+        </div>
+        {% else %}
+        <h5>Rede Externa: Não se aplica</h5>
+        {% endif %}
+    </section>
+
+    <ul class="list-group mb-5 mt-3">
+        <li class="list-group-item"><b>Topologia: </b>{{ dci.topologia }}</li>
+        <li class="list-group-item"><b>Link da Documentação: </b>{{ dci.link }}</li>
+        <li class="list-group-item"><b>Observações Finais: </b>{{ dci.obv_final }}</li>
+        <li class="list-group-item"><b>ID DCI: </b>{{ dci.id }}</li>
+        <li class="list-group-item"><b>Hora Gerada: </b>{{ dci.hora_geracao }}</li>
+    </ul>
+</section>
+{% endblock %}
