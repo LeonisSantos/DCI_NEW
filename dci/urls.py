@@ -11,4 +11,6 @@ urlpatterns = [
     path('lista-dci', views.lista_dci, name='lista-dci'),
     path('consulta-dci-etp/<id_dci>',
          views.consulta_dci_etp, name='consulta-dci-etp'),
+    path("teste-form", views.teste_forms, name="teste_form"),
+    path("gerar-pdf/<id_dci>", views.gerar_pdf, name="gerar-pdf"),
 ]

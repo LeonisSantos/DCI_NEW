@@ -1,6 +1,11 @@
 from django.shortcuts import render, get_object_or_404
-from dci.request_etp import buscar_etp
+from dci.request_etp import buscar_etp, atualizar
 from dci.models import EtpOnline, OesDci, OtsDCI, DciGerada
+from dci.forms import DciForms
+from django.http import HttpResponse
+from django.template.loader import get_template
+from io import BytesIO
+from xhtml2pdf import pisa
 
 
 def index(request):
@@ -18,15 +23,19 @@ def formulario(request):
         if etp_banco.exists():
 
             dci = get_object_or_404(EtpOnline, etp=etp_nome)
+            atualizar(dci.etp)
             oes = OesDci.objects.filter(etp_vinculada=dci.etp)
             ots = OtsDCI.objects.filter(etp_vinculada=dci.etp)
             contexto = {'dci': dci, 'oes': oes, 'ots': ots}
         else:
             if etp_nome != '':
                 dci = buscar_etp(etp_nome)
-                oes = OesDci.objects.filter(etp_vinculada=dci.etp)
-                ots = OtsDCI.objects.filter(etp_vinculada=dci.etp)
-                contexto = {'dci': dci, 'oes': oes, 'ots': ots}
+                if dci != None:
+                    oes = OesDci.objects.filter(etp_vinculada=dci.etp)
+                    ots = OtsDCI.objects.filter(etp_vinculada=dci.etp)
+                    contexto = {'dci': dci, 'oes': oes, 'ots': ots}
+                else:
+                    return render(request, 'dci/index.html')
             else:
                 return render(request, 'dci/index.html')
 
@@ -38,8 +47,8 @@ def formulario(request):
 def selecionados(request):
 
     if request.method == 'POST':
-        ots_selecionadas = request.POST.getlist('ots_select')
-        oes_selecionadas = request.POST.getlist('oe_select')
+        ots_select = request.POST.getlist('ots_select')
+        oes_select = request.POST.getlist('oe_select')
 
         etp_value = request.POST.get('input_etp_value')
         print(f"Teste de variavel{etp_value}")
@@ -54,8 +63,8 @@ def selecionados(request):
         dci = DciGerada(etp_value=etp_value, obv_atr=obv_atr, obv_oes=obv_oes, obv_rede_ext=obv_rede,
                         topologia=topologia, link=link, obv_final=obv_final, tipo_entrega=tipo_entrega)
 
-        dci.gerar_lista_oes(oes_selecionadas)
-        dci.gerar_lista_ots(ots_selecionadas)
+        dci.gerar_lista_oes(oes_select)
+        dci.gerar_lista_ots(ots_select)
 
         dci.save()
 
@@ -64,10 +73,11 @@ def selecionados(request):
 
         etp = get_object_or_404(EtpOnline, etp=dci.etp_value)
         print(etp.etp)
-        oes = OesDci.objects.filter(etp_vinculada=etp.etp)
-        ots = OtsDCI.objects.filter(etp_vinculada=etp.etp)
-        contexto = {'dci': dci, 'etp': etp, 'oes': oes,
-                    'ots': ots, 'lt_oes': lt_oes, 'lt_ots': lt_ots}
+
+        lista_oes = oes_selecionadas(lt_oes)
+        lista_ots = ots_selecionadas(lt_ots)
+
+        contexto = {'dci': dci, 'etp': etp, 'oes': lista_oes, 'ots': lista_ots}
 
         return render(request, 'dci/dci_consulta.html', contexto)
     else:
@@ -80,19 +90,12 @@ def dci(request):
         buscar = request.GET.get('buscar')
         if buscar != '':
             if val_dci(int(buscar)):
+
                 dci_exist = DciGerada.objects.filter(id=buscar)
 
                 if dci_exist.exists():
-                    print("Falhou")
-                    dci_value = get_object_or_404(DciGerada, id=buscar)
-                    lt_oes = dci_value.return_lista_oes()
-                    lt_ots = dci_value.return_lista_ots()
-                    etp = get_object_or_404(EtpOnline, etp=dci_value.etp_value)
-                    oes = OesDci.objects.filter(etp_vinculada=etp.etp)
-                    ots = OtsDCI.objects.filter(etp_vinculada=etp.etp)
 
-                    contexto = {'dci': dci_value, 'etp': etp, 'oes': oes,
-                                'ots': ots, 'lt_oes': lt_oes, 'lt_ots': lt_ots}
+                    contexto = buscar_dci(buscar)
 
                     return render(request, 'dci/dci_consulta.html', contexto)
                 else:
@@ -125,25 +128,53 @@ def lista_dci(request):
 
 def consulta_dci_etp(request, id_dci):
 
-    id_consulta = id_dci
+    id_consulta = int(id_dci)
 
     dci_exist = DciGerada.objects.filter(id=id_consulta)
 
     if dci_exist.exists():
-        dci_value = get_object_or_404(DciGerada, id=id_consulta)
-        lt_oes = dci_value.return_lista_oes()
-        lt_ots = dci_value.return_lista_ots()
-        etp = get_object_or_404(EtpOnline, etp=dci_value.etp_value)
-        oes = OesDci.objects.filter(etp_vinculada=etp.etp)
-        ots = OtsDCI.objects.filter(etp_vinculada=etp.etp)
 
-        contexto = {'dci': dci_value, 'etp': etp, 'oes': oes,
-                    'ots': ots, 'lt_oes': lt_oes, 'lt_ots': lt_ots}
+        contexto = buscar_dci(id_consulta)
 
         return render(request, 'dci/consulta_dci_etp.html', contexto)
 
     else:
         return render(request, 'dci/consulta_dci_etp.html')
+
+
+def gerar_pdf(request, id_dci):
+
+    template = get_template('dci/pdf_template.html')
+    id_teste = id_dci
+    dci_exist = DciGerada.objects.filter(id=id_teste)
+
+    if dci_exist.exists():
+
+        contexto = buscar_dci(id_teste)
+
+    html = template.render(contexto)
+
+    # Define a folha de estilo CSS
+    css_path = 'setup/static/css/bootstrap.min.css'
+    with open(css_path, 'r') as css_file:
+        css = css_file.read()
+
+    buffer = BytesIO()
+    pdf = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), buffer,
+                         encoding='utf-8', css=css)
+
+    if not pdf.err:
+        response = HttpResponse(
+            buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="dci.pdf"'
+        return response
+    else:
+        return HttpResponse('Ocorreram erros ao gerar o PDF: %s' % html)
+
+
+def teste_forms(request):
+    forms = DciForms()
+    return render(request, 'dci/teste_form.html', {'forms': forms})
 
 
 def val_dci(id_dci):
@@ -155,3 +186,49 @@ def val_dci(id_dci):
             break
 
     return res
+
+
+def oes_selecionadas(lt_oes):
+
+    lista_oes = []
+
+    for item in lt_oes:
+
+        obj = OesDci.objects.filter(id=item)
+
+        if obj.exists():
+
+            obj = get_object_or_404(OesDci, id=item)
+            lista_oes.append(obj)
+
+    return lista_oes
+
+
+def ots_selecionadas(lt_ots):
+
+    lista_ots = []
+
+    for item in lt_ots:
+
+        obj = OtsDCI.objects.filter(id=item)
+
+        if obj.exists():
+
+            obj = get_object_or_404(OtsDCI, id=item)
+            lista_ots.append(obj)
+
+    return lista_ots
+
+
+def buscar_dci(id_value):
+    dci_value = get_object_or_404(DciGerada, id=id_value)
+    lt_oes = dci_value.return_lista_oes()
+    lt_ots = dci_value.return_lista_ots()
+    etp = get_object_or_404(EtpOnline, etp=dci_value.etp_value)
+
+    lista_oes = oes_selecionadas(lt_oes)
+    lista_ots = ots_selecionadas(lt_ots)
+    contexto = {'dci': dci_value, 'etp': etp,
+                'oes': lista_oes, 'ots': lista_ots}
+
+    return contexto

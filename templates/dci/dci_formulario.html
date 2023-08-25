@@ -81,7 +81,11 @@
                         <table class="table table-sm table-hover table-bordered table-condensed">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
+                                    <th scope="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll_Oes">
+                                        </div>
+                                    </th>
                                     <th scope="col">ID</th>
                                     <th scope="col">numOE</th>
                                     <th scope="col">Tipo da OE</th>
@@ -91,8 +95,8 @@
                             <tbody>
                                 {% for oe in oes %}
                                 <tr>
-                                    <th scope="row" style="margin:  0 auto;"> <input class="form-check-input center"
-                                            type="checkbox" id="gridCheck" name="oe_select" value="{{oe.oe_id}}">
+                                    <th scope="row" style="margin:  0 auto;"> <input class="form-check-input center oes"
+                                            type="checkbox" id="gridCheck" name="oe_select" value="{{oe.id}}">
                                     </th>
                                     <th>{{ oe.oe_id }}</th>
                                     <td>{{ oe.num_oe }}</td>
@@ -122,7 +126,11 @@
                         <table class="table table-sm table-hover table-bordered">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
+                                    <th scope="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll_Ots">
+                                        </div>
+                                    </th>
                                     <th scope="col">Id</th>
                                     <th scope="col">numOTS</th>
                                     <th scope="col">Sigla</th>
@@ -132,8 +140,8 @@
                             <tbody>
                                 {% for item in ots %}
                                 <tr>
-                                    <th scope="row" style="margin:  0 auto;"> <input class="form-check-input center"
-                                            type="checkbox" id="gridCheck" value="{{item.ots_id}}" name="ots_select">
+                                    <th scope="row" style="margin:  0 auto;"> <input class="form-check-input ots"
+                                            type="checkbox" id="gridCheck" value="{{item.id}}" name="ots_select">
                                     </th>
                                     <th>{{ item.ots_id }}</th>
                                     <td>{{ item.num_ots }}</td>
@@ -171,4 +179,20 @@
         </div>
     </form>
 </section>
+<script>
+    document.getElementById('selectAll_Oes').addEventListener('change', function () {
+        let checkboxes = document.querySelectorAll('.oes');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = this.checked;
+        }, this);
+    }); 
+</script>
+<script>
+    document.getElementById('selectAll_Ots').addEventListener('change', function () {
+        let checkboxes = document.querySelectorAll('.ots');
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = this.checked;
+        }, this);
+    }); 
+</script>
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'dci/base.html' %}
+{% load static %}
+{% block content %}
+<section class="container col-8" style="margin-top: 70px">
+    <form method="POST" action="{% url 'selecionados' %}">
+        {% csrf_token %}
+        {% for field in forms.visible_fields %}
+        <div class="form-group">
+            <label for="{{field.id_for_label}}">{{field.label}}</label>
+            {{field}}
+        </div>
+        {% endfor %}
+        <div class="text-center mb-5 mt-3">
+            <button type="submit" class="btn btn-primary">Gerar DCI</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

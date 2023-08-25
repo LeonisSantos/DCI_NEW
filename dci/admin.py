@@ -3,7 +3,7 @@ from dci.models import EtpOnline, OesDci, OtsDCI, DciGerada
 
 
 class ListandoEtps(admin.ModelAdmin):
-    list_display = ('id', 'etp', 'elaborador', 'vendor')
+    list_display = ('id', 'etp','elaborador', 'vendor')
     list_display_links = ('id', 'etp')
     search_fields = ('etp', )
     list_per_page = 50

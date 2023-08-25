@@ -32,16 +32,12 @@
                     </thead>
                     <tbody>
                         {% for oe in oes %}
-                        {% for id in lt_oes %}
-                        {% if oe.oe_id == id %}
                         <tr>
                             <th>{{ oe.oe_id }}</th>
                             <td>{{ oe.num_oe }}</td>
                             <td>{{ oe.tipo_oe }}</td>
                             <td>{{ oe.descricao }}</td>
                         </tr>
-                        {% endif %}
-                        {% endfor %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -68,16 +64,12 @@
                     </thead>
                     <tbody>
                         {% for item in ots %}
-                        {% for id in lt_ots %}
-                        {% if item.ots_id == id %}
                         <tr>
                             <th>{{ item.ots_id }}</th>
                             <td>{{ item.num_ots }}</td>
                             <td>{{ item.sigla }}</td>
                             <td>{{ item.proprietario }}</td>
                         </tr>
-                        {% endif %}
-                        {% endfor %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -97,5 +89,10 @@
         <li class="list-group-item"><b>ID DCI: </b>{{ dci.id }}</li>
         <li class="list-group-item"><b>Hora Gerada: </b>{{ dci.hora_geracao }}</li>
     </ul>
+    <form action="{% url 'gerar-pdf' dci.id %}" method="get">
+        <div class="text-center mb-5 mt-3">
+            <button type="submit" class="btn btn-primary">Imprimir DCI</button>
+        </div>
+    </form>
 </section>
 {% endblock %}

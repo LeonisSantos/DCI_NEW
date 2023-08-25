@@ -33,12 +33,19 @@ class OesDci(models.Model):
     def __str__(self) -> str:
         return self.etp_vinculada
 
+    def busca_id(self, id):
+        id_busca = int(id)
+
+        if id_busca == self.id:
+            return True
+        else:
+            return False
 
 class OtsDCI(models.Model):
     ots_id = models.CharField(max_length=100)
     num_ots = models.CharField(max_length=100)
     sigla = models.CharField(max_length=100)
-    proprietario = models.CharField(max_length=100, null=True)
+    proprietario = models.CharField(max_length=100, null=True, default='')
     etp_vinculada = models.CharField(max_length=100, null=False)
     ots_selec = models.BooleanField(default=False)
 
@@ -74,6 +81,10 @@ class DciGerada(models.Model):
     def return_lista_oes(self):
         lista = json.loads(self.list_oes)
         return lista
+
+    def buscar_id(self, id_selecionado, id_obj):
+        if id_selecionado == str(id_obj):
+            return True
 
     def gerar_lista_ots(self, lista):
         lista_seializada = json.dumps(lista)
